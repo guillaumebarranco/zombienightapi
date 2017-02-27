@@ -48,6 +48,30 @@ if(isset($_GET['function'])) {
 			array('status' => "success")
 		);
 	}
+
+	if($_GET['function'] === "getPlays") {
+
+		try {
+			$response = $bdd->prepare("SELECT * from plays");
+			$response->execute();
+
+			$data = [];
+
+			foreach ($response->fetchAll() as $play) {
+
+				$response = $bdd->query("SELECT * from players_plays WHERE play_id = ".$play['id']);
+
+				$play['players'] = $response->fetchAll();
+
+				$data[] = $play;
+			}
+
+			echo json_encode($data);
+
+		} catch (Exception $e) {
+			die("Some error occured while the register process : ".$e);
+		}
+	}
 }
 
 function insertUser($player, $playId) {
